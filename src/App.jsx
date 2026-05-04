@@ -1,0 +1,119 @@
+import { useContext, useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router';
+import * as tradeOfferService from './services/tradeOfferService';
+import * as pokemonService from './services/pokemonService'
+
+import NavBar from './components/NavBar/NavBar';
+import SignUpForm from './components/SignUpForm/SignUpForm';
+import SignInForm from './components/SignInForm/SignInForm';
+import Dashboard from './components/Dashboard/Dashboard';
+import Pokemon from './components/Pokemon/Pokemon';
+import TradeOffer from './components/TradeOffer/TradeOffer';
+import PokemonDetail from './components/PokemonDetail/PokemonDetail';
+import TradeOfferForm from './components/TradeOfferForm/TradeOfferForm';
+
+import { UserContext } from './contexts/UserContext';
+import MyCards from './components/MyCards/MyCards';
+import PokemonForm from './components/PokemonForm/PokemonForm';
+
+const App = () => {
+  // Access the user object from UserContext
+  // This gives us the currently logged-in user's information (username, email) that we extract from the token
+  const { user } = useContext(UserContext);
+
+  const [pokemons, setPokemons] = useState([])
+
+  const [pokemonToUpdate, setPokemonToUpdate] = useState(null)
+
+  const [tradeOffers, setTradeOffers] = useState([])
+
+  useEffect(() => {
+
+    const getPokemons = async () => {
+      try {
+
+        const pokemons = await pokemonService.show()
+        setPokemons(pokemons)
+      
+      }
+      catch (error) {
+        console.log(error)
+      }
+    }
+    
+    getPokemons()
+
+    const getTradeOffers = async () => {
+      try {
+        
+        const tradeOffers = await tradeOfferService.show()
+        setTradeOffers(tradeOffers)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+        if(!user?._id){
+      setTradeOffers([])
+      return
+    }
+ 
+    getTradeOffers()
+
+  }, [user?._id])
+
+  const updateTradeOfferList = (tradeOffer) => {
+    setTradeOffers([...tradeOffers, tradeOffer])
+  }
+
+  const updatePokemonList = (pokemon) => {
+    setPokemons([...pokemons, pokemon])
+  }
+
+  const findPokemonToUpdate = (pokemonToUpdateId) => {
+    const foundPokemon = pokemons.find((pokemon) => pokemon._id === pokemonToUpdateId )
+    setPokemonToUpdate(foundPokemon)
+  }
+
+  const updateOnePokemon = (pokemonObj) => {
+    const newPokemonList = pokemons.map((pokemon) => {
+      if (pokemon._id === pokemonObj._id) {
+        return pokemonObj
+      }
+      else {
+        return pokemon
+      }
+    })
+    setPokemons(newPokemonList)
+  }
+
+
+const deletePokemon = (id) => {
+
+  const newPokemonList = pokemons.filter(pokemon => pokemon._id !== id)
+
+  setPokemons(newPokemonList)
+}
+
+
+  return (
+    <>
+      <NavBar/>
+      <Routes>
+        <Route path='/' element={<Dashboard />} />
+        <Route path='/sign-up' element={<SignUpForm />} />
+        <Route path='/sign-in' element={<SignInForm />} />
+        <Route path='/pokemon' element={<Pokemon pokemons={pokemons} />} />
+        <Route path='/tradeOffer' element={<TradeOffer user={user}/>} />
+        <Route path='/pokemon/create' element={<PokemonForm user={user} updatePokemonList={updatePokemonList} />} />
+        <Route path='/pokemon/:id' element={<PokemonDetail user={user} />} />
+        <Route path='/tradeOffer/:id/create' element={<TradeOfferForm user={user} updateTradeOfferList={updateTradeOfferList}/>} />
+        <Route path='/pokemon/:id/update' element={<PokemonForm user={user}  updateOnePokemon={updateOnePokemon} />} />
+        <Route path='/pokemon/mycards' element={<MyCards pokemons={pokemons} user={user} deletePokemon={deletePokemon}  findPokemonToUpdate={findPokemonToUpdate} />} />
+
+      </Routes>
+    </>
+  );
+};
+
+export default App;

@@ -1,0 +1,142 @@
+import React, { useEffect, useState } from 'react'
+import * as tradeOfferService from '../../services/tradeOfferService'
+
+import styles from './TradeOffer.module.css'
+
+
+function TradeOffer({ user }) {
+
+
+    const [tradeOffers, setTradeOffers] = useState([])
+
+        const fetchTrades = async () => {
+      try {
+        const trades = await tradeOfferService.show();
+        setTradeOffers(trades);
+      } catch (err) {
+        console.error('Failed to fetch trades', err);
+      }
+    };
+    useEffect(() => {
+    if (!user?._id) return;
+    fetchTrades();
+  }, [user?._id]);
+
+  if (!user?._id) return <h1>Please sign in to view your trades</h1>
+
+  const handleRespond = async (id, action) => {
+    const updatedTrade = await tradeOfferService.respond(id, action);
+
+    fetchTrades()
+  };
+ 
+  
+  return (
+  <div className={styles.pageWrapper}>
+    <div className={styles.cardContainer}>
+      <h1 className={styles.title}>My Trade Offers</h1>
+
+      {tradeOffers.length === 0 ? (
+        <p className={styles.emptyText}>No trade offers found.</p>
+      ) : (
+        tradeOffers.map((offer) => {
+            const senderPokemon = offer.sender_pokemon_id
+            const receiverPokemon = offer.receiver_pokemon_id
+
+            const isBrokenTrade = !senderPokemon || !receiverPokemon
+
+            return (
+              <div key={offer._id} className={styles.tradeCard}>
+                <div className={styles.pokemonRow}>
+
+                  {/* SENDER */}
+                  <div className={styles.pokemonBox}>
+                    {senderPokemon ? (
+                      <>
+                        {senderPokemon.image && (
+                          <img
+                            src={senderPokemon.image}
+                            alt="Sender Pokémon"
+                            className={styles.pokemonImage}
+                          />
+                        )}
+                        <p className={styles.pokemonText}>{senderPokemon.name}</p>
+                        <p className={styles.pokemonText}>Type: {senderPokemon.type}</p>
+                        <p className={styles.pokemonText}>Level: {senderPokemon.level}</p>
+                        <p className={styles.pokemonText}>
+                          Shiny: {senderPokemon.shiny ? 'Yes' : 'No'}
+                        </p>
+                      </>
+                    ) : (
+                      <p className={styles.missingText}>
+                        Pokémon Card was deleted
+                      </p>
+                    )}
+                    <p className={styles.userText}>
+                      Sender: {offer.sender_id?.username}
+                    </p>
+                  </div>
+
+                  {/* RECEIVER */}
+                  <div className={styles.pokemonBox}>
+                    {receiverPokemon ? (
+                      <>
+                        {receiverPokemon.image && (
+                          <img
+                            src={receiverPokemon.image}
+                            alt="Receiver Pokémon"
+                            className={styles.pokemonImage}
+                          />
+                        )}
+                        <p className={styles.pokemonText}>{receiverPokemon.name}</p>
+                        <p className={styles.pokemonText}>Type: {receiverPokemon.type}</p>
+                        <p className={styles.pokemonText}>Level: {receiverPokemon.level}</p>
+                        <p className={styles.pokemonText}>
+                          Shiny: {receiverPokemon.shiny ? 'Yes' : 'No'}
+                        </p>
+                      </>
+                    ) : (
+                      <p className={styles.missingText}>
+                        Pokémon Card was deleted
+                      </p>
+                    )}
+                    <p className={styles.userText}>
+                      Receiver: {offer.receiver_id?.username}
+                    </p>
+                  </div>
+                </div>
+
+                <p className={styles.status}>
+                  Status: {isBrokenTrade ? 'cancelled' : offer.status}
+                </p>
+
+                <div className={styles.actions}>
+                  {offer.status === 'pending' &&
+                    offer.receiver_id?._id === user._id &&
+                    !isBrokenTrade && (
+                      <>
+                        <button
+                          className={styles.actionBtn}
+                          onClick={() => handleRespond(offer._id, 'accepted')}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className={styles.actionBtn}
+                          onClick={() => handleRespond(offer._id, 'rejected')}
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                </div>
+              </div>
+            )
+          })
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default TradeOffer

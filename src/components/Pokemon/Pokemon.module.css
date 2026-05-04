@@ -1,0 +1,126 @@
+/* Page wrapper */
+.page {
+  min-height: 100vh;
+  background-color: #1a4d8c; /* Deep Pokémon card blue background */
+  background-image: linear-gradient(135deg, #1a4d8c 0%, #0d3b66 100%); /* Blue gradient */
+  font-family: "Open Sans", sans-serif;
+
+  /* Center content */
+  display: flex;
+  justify-content: center;
+
+  /* Safe horizontal padding */
+  padding: 40px 20px;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 60px;
+
+  /* CENTER cards but use full width */
+  justify-content: center;
+}
+
+/* Title */
+.title {
+  color: #c62828; /* Rich red like Pokémon card titles */
+  margin-bottom: 30px;
+  font-size: 2.2rem;
+  text-align: center;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+/* Card (phone-like vertical) */
+.card {
+  width: 260px;
+  height: 420px;
+  background: linear-gradient(135deg, #f8f3e0 0%, #fff9e6 100%); /* Parchment/card background */
+  border: 3px solid #d4af37; /* Gold border like rare card edges */
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  display: flex;
+  flex-direction: column;
+  color: #2c3e50; /* Deep blue-grey text */
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+}
+
+/* Image wrapper */
+.imageWrapper {
+  width: 100%;
+  height: 200px;
+  background-color: rgba(56, 142, 60, 0.1); /* Subtle green background */
+  border-bottom: 2px solid #d4af37; /* Gold separator */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Image */
+.image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+/* Content */
+.content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Name */
+.name {
+  font-size: 1.2rem;
+  color: #1a4d8c; /* Deep blue for card names */
+  margin-bottom: 10px;
+  font-weight: 600;
+  border-bottom: 1px solid #d4af37; /* Gold underline */
+  padding-bottom: 4px;
+}
+
+/* Description */
+.text {
+  font-size: 0.95rem;
+  color: #5d4037; /* Brownish-grey like card text */
+  line-height: 1.5;
+  flex: 1;
+}
+
+/* Button */
+.button {
+  margin-top: auto;
+  padding: 12px;
+  background: linear-gradient(to bottom, #c62828 0%, #b71c1c 100%); /* Pokémon red gradient */
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 0 #7f0000;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.button:hover {
+  background: linear-gradient(to bottom, #d32f2f 0%, #c62828 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #7f0000;
+}
+
+.button:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 0 #7f0000;
+}
